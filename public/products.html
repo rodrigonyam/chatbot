@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Products - VitaStore</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .products-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .products-hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .products-filters {
+            background: #f8f9fa;
+            padding: 2rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .filters-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            background: white;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 3rem 0;
+        }
+
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .product-image {
+            height: 200px;
+            background: linear-gradient(45deg, #f0f2ff, #e8f4f8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #667eea;
+        }
+
+        .product-info {
+            padding: 1.5rem;
+        }
+
+        .product-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .product-category {
+            color: #667eea;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 500;
+            margin-bottom: 0.75rem;
+        }
+
+        .product-description {
+            font-size: 0.9rem;
+            color: #4a5568;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-benefits {
+            margin-bottom: 1rem;
+        }
+
+        .product-benefits ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .product-benefits li {
+            font-size: 0.85rem;
+            color: #2d7d32;
+            margin-bottom: 0.25rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .product-benefits li::before {
+            content: "✓";
+            margin-right: 0.5rem;
+            color: #2d7d32;
+            font-weight: bold;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 1.5rem;
+        }
+
+        .product-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .product-price .sale-price {
+            color: #e53e3e;
+        }
+
+        .product-price .original-price {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            text-decoration: line-through;
+            margin-left: 0.5rem;
+        }
+
+        .add-to-cart-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s ease;
+        }
+
+        .add-to-cart-btn:hover {
+            background: #5a67d8;
+        }
+
+        .product-rating {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-size: 0.85rem;
+        }
+
+        .stars {
+            color: #ffd700;
+            margin-right: 0.5rem;
+        }
+
+        .rating-count {
+            color: #718096;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 0;
+            color: #718096;
+        }
+
+        .no-products {
+            text-align: center;
+            padding: 4rem 0;
+            color: #718096;
+        }
+
+        .discount-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e53e3e;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            z-index: 1;
+        }
+
+        .product-card {
+            position: relative;
+        }
+
+        .rating-text {
+            font-weight: 600;
+            margin: 0 0.25rem;
+            color: #2d3748;
+        }
+
+        .product-tags {
+            margin: 0.75rem 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+
+        .tag {
+            background: #edf2f7;
+            color: #4a5568;
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .more-benefits {
+            color: #667eea !important;
+            font-style: italic;
+        }
+
+        .product-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .btn-secondary {
+            flex: 1;
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            color: #4a5568;
+            padding: 0.5rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-secondary:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .current-price {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #2d3748;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .loading {
+            display: none;
+        }
+
+        .no-products {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .products-hero h1 {
+                font-size: 2rem;
+            }
+            
+            .filters-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .search-input {
+                min-width: auto;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .product-actions {
+                flex-direction: column;
+            }
+        }
+
+        /* Notification animations */
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+
+        /* Product modal styles */
+        .product-modal {
+            background: white;
+            border-radius: 12px;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            margin: 20px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #718096;
+        }
+
+        .modal-content {
+            padding: 1.5rem;
+        }
+
+        .product-details p {
+            margin-bottom: 1rem;
+        }
+
+        .benefits, .ingredients, .usage {
+            margin-bottom: 1.5rem;
+        }
+
+        .benefits ul, .ingredients ul {
+            margin-top: 0.5rem;
+            padding-left: 1.5rem;
+        }
+
+        .notification-content {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="logo">
+                    <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
+                        <i class="fas fa-leaf"></i>
+                        <span>VitaStore</span>
+                    </a>
+                </div>
+                <nav class="nav">
+                    <a href="products.html" class="nav-link active">Products</a>
+                    <a href="#" class="nav-link">About</a>
+                    <a href="#" class="nav-link">Contact</a>
+                    <button class="cart-btn">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-count">0</span>
+                    </button>
+                </nav>
+            </div>
+        </header>
+
+        <!-- Products Hero -->
+        <section class="products-hero">
+            <div class="container">
+                <h1>Our Premium Vitamin Collection</h1>
+                <p>Discover high-quality vitamins and supplements for your health journey</p>
+            </div>
+        </section>
+
+        <!-- Products Filters -->
+        <section class="products-filters">
+            <div class="container">
+                <div class="filters-container">
+                    <select id="category-filter" class="filter-select">
+                        <option value="">All Categories</option>
+                        <option value="vitamins">Vitamins</option>
+                        <option value="minerals">Minerals</option>
+                        <option value="supplements">Supplements</option>
+                        <option value="multivitamins">Multivitamins</option>
+                        <option value="probiotics">Probiotics</option>
+                        <option value="prebiotics">Prebiotics</option>
+                    </select>
+                    
+                    <select id="subcategory-filter" class="filter-select">
+                        <option value="">All Types</option>
+                        <option value="wellness">Wellness</option>
+                        <option value="drinks">Drinks</option>
+                        <option value="weight-loss">Weight Loss</option>
+                        <option value="toddler-gummies">Toddler Gummies</option>
+                        <option value="men">Men's Health</option>
+                        <option value="women">Women's Health</option>
+                        <option value="senior">Senior (50+)</option>
+                    </select>
+                    
+                    <input 
+                        type="text" 
+                        id="search-input" 
+                        class="search-input" 
+                        placeholder="Search products..."
+                    >
+                </div>
+            </div>
+        </section>
+
+        <!-- Products Grid -->
+        <section class="products-section">
+            <div class="container">
+                <div id="loading" class="loading" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    Loading products...
+                </div>
+                
+                <div id="products-grid" class="products-grid">
+                    <!-- Products will be loaded here -->
+                </div>
+                
+                <div id="no-products" class="no-products" style="display: none;">
+                    <i class="fas fa-search"></i>
+                    <h3>No products found</h3>
+                    <p>Try adjusting your search or filters</p>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script src="js/chat.js"></script>
+    <script src="js/main.js"></script>
+    <script>
+        class ProductsPage {
+            constructor() {
+                this.products = [];
+                this.filteredProducts = [];
+                this.init();
+            }
+
+            async init() {
+                await this.loadProducts();
+                this.setupEventListeners();
+                this.renderProducts();
+            }
+
+            async loadProducts() {
+                try {
+                    document.getElementById('loading').style.display = 'block';
+                    
+                    const response = await fetch('/api/chat/products/search?limit=50');
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.products = data.products;
+                        this.filteredProducts = [...this.products];
+                    }
+                } catch (error) {
+                    console.error('Error loading products:', error);
+                } finally {
+                    document.getElementById('loading').style.display = 'none';
+                }
+            }
+
+            setupEventListeners() {
+                const categoryFilter = document.getElementById('category-filter');
+                const subcategoryFilter = document.getElementById('subcategory-filter');
+                const searchInput = document.getElementById('search-input');
+
+                categoryFilter.addEventListener('change', () => this.applyFilters());
+                subcategoryFilter.addEventListener('change', () => this.applyFilters());
+                searchInput.addEventListener('input', () => this.applyFilters());
+            }
+
+            applyFilters() {
+                const category = document.getElementById('category-filter').value;
+                const subcategory = document.getElementById('subcategory-filter').value;
+                const search = document.getElementById('search-input').value.toLowerCase();
+
+                this.filteredProducts = this.products.filter(product => {
+                    const matchesCategory = !category || product.category === category;
+                    const matchesSubcategory = !subcategory || product.subcategory === subcategory;
+                    const matchesSearch = !search || 
+                        product.name.toLowerCase().includes(search) ||
+                        product.description.toLowerCase().includes(search) ||
+                        product.benefits.some(benefit => benefit.toLowerCase().includes(search));
+
+                    return matchesCategory && matchesSubcategory && matchesSearch;
+                });
+
+                this.renderProducts();
+            }
+
+            renderProducts() {
+                const grid = document.getElementById('products-grid');
+                const noProducts = document.getElementById('no-products');
+
+                if (this.filteredProducts.length === 0) {
+                    grid.classList.add('hidden');
+                    noProducts.classList.remove('hidden');
+                    return;
+                }
+
+                grid.classList.remove('hidden');
+                noProducts.classList.add('hidden');
+
+                grid.innerHTML = this.filteredProducts.map(product => {
+                    const salePrice = product.pricing?.salePrice;
+                    const basePrice = product.pricing?.basePrice;
+                    const hasDiscount = salePrice && salePrice < basePrice;
+                    const finalPrice = hasDiscount ? salePrice : basePrice;
+                    const discountPercent = hasDiscount ? Math.round(((basePrice - salePrice) / basePrice) * 100) : 0;
+
+                    const rating = product.ratings?.average || 4.0;
+                    const fullStars = Math.floor(rating);
+                    const hasHalfStar = rating % 1 >= 0.5;
+                    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+                    
+                    const stars = '★'.repeat(fullStars) + 
+                                 (hasHalfStar ? '☆' : '') + 
+                                 '☆'.repeat(emptyStars);
+
+                    // Product icon based on category
+                    const getProductIcon = (category) => {
+                        const icons = {
+                            'vitamins': 'fas fa-pills',
+                            'minerals': 'fas fa-gem',
+                            'supplements': 'fas fa-leaf',
+                            'multivitamins': 'fas fa-capsules',
+                            'probiotics': 'fas fa-bacteria',
+                            'prebiotics': 'fas fa-seedling'
+                        };
+                        return icons[category] || 'fas fa-capsules';
+                    };
+
+                    const productId = product._id || 'temp-' + Math.random().toString(36).substr(2, 9);
+                    const safeName = product.name.replace(/'/g, "\\'");
+
+                    return `
+                        <div class="product-card" data-category="${product.category}" data-subcategory="${product.subcategory || ''}">
+                            ${hasDiscount ? `<div class="discount-badge">-${discountPercent}%</div>` : ''}
+                            <div class="product-image">
+                                <i class="${getProductIcon(product.category)}"></i>
+                            </div>
+                            <div class="product-info">
+                                <div class="product-category">${product.category}${product.subcategory ? ` • ${product.subcategory}` : ''}</div>
+                                <h3 class="product-name">${product.name}</h3>
+                                <div class="product-rating">
+                                    <span class="stars" title="${rating}/5 stars">${stars}</span>
+                                    <span class="rating-text">${rating.toFixed(1)}</span>
+                                    <span class="rating-count">(${product.ratings?.count || 0})</span>
+                                </div>
+                                <p class="product-description">${product.description}</p>
+                                <div class="product-benefits">
+                                    <ul>
+                                        ${product.benefits?.slice(0, 3).map(benefit => `<li>${benefit}</li>`).join('') || ''}
+                                        ${product.benefits?.length > 3 ? `<li class="more-benefits">+${product.benefits.length - 3} more benefits</li>` : ''}
+                                    </ul>
+                                </div>
+                                <div class="product-tags">
+                                    ${product.tags?.slice(0, 3).map(tag => `<span class="tag">${tag}</span>`).join('') || ''}
+                                </div>
+                                <div class="product-footer">
+                                    <div class="product-price">
+                                        ${hasDiscount ? 
+                                            `<span class="sale-price">$${salePrice}</span><span class="original-price">$${basePrice}</span>` :
+                                            `<span class="current-price">$${basePrice}</span>`
+                                        }
+                                    </div>
+                                    <button class="add-to-cart-btn" 
+                                            onclick="addToCart('${productId}', '${safeName}', ${finalPrice}, '${product.category}')" 
+                                            data-product-id="${productId}">
+                                        <i class="fas fa-cart-plus"></i>
+                                        Add to Cart
+                                    </button>
+                                </div>
+                                <div class="product-actions">
+                                    <button class="btn-secondary" onclick="viewProductDetails('${productId}')">
+                                        <i class="fas fa-info-circle"></i>
+                                        Details
+                                    </button>
+                                    <button class="btn-secondary" onclick="viewReviews('${productId}')">
+                                        <i class="fas fa-star"></i>
+                                        Reviews
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        // Initialize the products page
+        document.addEventListener('DOMContentLoaded', () => {
+            new ProductsPage();
+        });
+
+        // Enhanced add to cart function
+        function addToCart(productId, productName, price, category) {
+            // Use the main app's cart functionality if available
+            if (window.vitaStore) {
+                window.vitaStore.addToCart({
+                    id: productId,
+                    name: productName,
+                    price: price,
+                    category: category,
+                    image: '/images/placeholder.jpg'
+                });
+            } else {
+                // Enhanced fallback with better UX
+                const button = document.querySelector(`[data-product-id="${productId}"]`);
+                if (button) {
+                    const originalText = button.innerHTML;
+                    button.innerHTML = '<i class="fas fa-check"></i> Added!';
+                    button.style.background = '#2d7d32';
+                    button.disabled = true;
+                    
+                    setTimeout(() => {
+                        button.innerHTML = originalText;
+                        button.style.background = '';
+                        button.disabled = false;
+                    }, 2000);
+                }
+                
+                // Show notification
+                showNotification(`${productName} added to cart!`, 'success');
+            }
+        }
+
+        // View product details function
+        function viewProductDetails(productId) {
+            // In a real app, this would open a modal or navigate to product page
+            const product = window.productsPage?.products?.find(p => p._id === productId);
+            if (product) {
+                showProductModal(product);
+            } else {
+                showNotification('Product details coming soon!', 'info');
+            }
+        }
+
+        // View reviews function
+        function viewReviews(productId) {
+            // In a real app, this would show reviews modal
+            showNotification('Customer reviews coming soon!', 'info');
+        }
+
+        // Show notification function
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                </div>
+            `;
+            
+            // Add notification styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#2d7d32' : type === 'error' ? '#d32f2f' : '#1976d2'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                z-index: 1000;
+                animation: slideIn 0.3s ease;
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Show product modal function
+        function showProductModal(product) {
+            const modal = document.createElement('div');
+            modal.className = 'product-modal-overlay';
+            modal.innerHTML = `
+                <div class="product-modal">
+                    <div class="modal-header">
+                        <h2>${product.name}</h2>
+                        <button class="modal-close" onclick="this.closest('.product-modal-overlay').remove()">&times;</button>
+                    </div>
+                    <div class="modal-content">
+                        <div class="product-details">
+                            <p><strong>Category:</strong> ${product.category}</p>
+                            <p><strong>Description:</strong> ${product.description}</p>
+                            <div class="benefits">
+                                <strong>Benefits:</strong>
+                                <ul>
+                                    ${product.benefits?.map(benefit => `<li>${benefit}</li>`).join('') || ''}
+                                </ul>
+                            </div>
+                            <div class="ingredients">
+                                <strong>Ingredients:</strong>
+                                <ul>
+                                    ${product.ingredients?.map(ing => `<li>${ing.name}: ${ing.amount} (${ing.dailyValue} DV)</li>`).join('') || ''}
+                                </ul>
+                            </div>
+                            <div class="usage">
+                                <strong>Usage:</strong> ${product.usage?.dosage} ${product.usage?.frequency} - ${product.usage?.instructions}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            // Add modal styles
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2000;
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // Close modal on backdrop click
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // Initialize main app
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof VitaStoreApp !== 'undefined') {
+                window.vitaStore = new VitaStoreApp();
+            }
+        });
+    </script>
+</body>
+</html>
