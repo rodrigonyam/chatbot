@@ -4,9 +4,16 @@ const compromise = require('compromise');
 
 class ChatbotService {
     constructor() {
-        this.openai = new OpenAI({
-            apiKey: process.env.OPENAI_API_KEY
-        });
+        // Initialize OpenAI only if API key is available and not a test key
+        if (process.env.OPENAI_API_KEY && process.env.OPENAI_API_KEY !== 'sk-test-key-for-development') {
+            this.openai = new OpenAI({
+                apiKey: process.env.OPENAI_API_KEY
+            });
+            console.log('OpenAI initialized for chatbot service');
+        } else {
+            this.openai = null;
+            console.log('OpenAI not configured - using fallback responses');
+        }
         
         this.conversationHistory = new Map(); // Store conversations by session ID
         this.vitaminKnowledge = this.loadVitaminKnowledge();
@@ -438,24 +445,37 @@ class ChatbotService {
                 ...history.slice(-10), // Last 10 messages for context
             ];
             
-            const completion = await this.openai.chat.completions.create({
-                model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
-                messages: messages,
-                max_tokens: 200,
-                temperature: 0.7
-            });
-            
-            const response = completion.choices[0].message.content.trim();
-            
-            return {
-                message: response,
-                intent: 'general_conversation',
-                quickActions: [
-                    { label: '🔍 Get Recommendations', value: 'I need vitamin recommendations' },
-                    { label: '📞 Customer Support', value: 'I need help with my order' },
-                    { label: '❓ Ask About Vitamins', value: 'I have a question about vitamins' }
-                ]
-            };
+            if (this.openai) {
+                const completion = await this.openai.chat.completions.create({
+                    model: process.env.OPENAI_MODEL || 'gpt-3.5-turbo',
+                    messages: messages,
+                    max_tokens: 200,
+                    temperature: 0.7
+                });
+                
+                const response = completion.choices[0].message.content.trim();
+                
+                return {
+                    message: response,
+                    intent: 'general_conversation',
+                    quickActions: [
+                        { label: '🔍 Get Recommendations', value: 'I need vitamin recommendations' },
+                        { label: '📞 Customer Support', value: 'I need help with my order' },
+                        { label: '❓ Ask About Vitamins', value: 'I have a question about vitamins' }
+                    ]
+                };
+            } else {
+                // Fallback response when OpenAI is not available
+                return {
+                    message: "I'm here to help with your vitamin and supplement needs! I can help you find products, answer questions about vitamins, or provide recommendations. What would you like to know?",
+                    intent: 'general_conversation',
+                    quickActions: [
+                        { label: '🔍 Get Recommendations', value: 'I need vitamin recommendations' },
+                        { label: '📞 Customer Support', value: 'I need help with my order' },
+                        { label: '❓ Ask About Vitamins', value: 'I have a question about vitamins' }
+                    ]
+                };
+            }
             
         } catch (error) {
             console.error('OpenAI API error:', error);

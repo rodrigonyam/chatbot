@@ -392,7 +392,7 @@
                 <div class="logo">
                     <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center;">
                         <i class="fas fa-leaf"></i>
-                        <span>VitaStore</span>
+                        <span>Store</span>
                     </a>
                 </div>
                 <nav class="nav">
@@ -491,18 +491,209 @@
                 try {
                     document.getElementById('loading').style.display = 'block';
                     
-                    const response = await fetch('/api/chat/products/search?limit=50');
-                    const data = await response.json();
-                    
-                    if (data.success) {
-                        this.products = data.products;
-                        this.filteredProducts = [...this.products];
+                    // Try to load from API first
+                    try {
+                        const response = await fetch('/api/chat/products/search?limit=50');
+                        const data = await response.json();
+                        
+                        if (data.success && data.products && data.products.length > 0) {
+                            this.products = data.products;
+                            this.filteredProducts = [...this.products];
+                            return;
+                        }
+                    } catch (apiError) {
+                        console.log('API not available, using static data');
                     }
+                    
+                    // Fallback to static demo data
+                    this.products = this.getStaticProducts();
+                    this.filteredProducts = [...this.products];
+                    
                 } catch (error) {
                     console.error('Error loading products:', error);
                 } finally {
                     document.getElementById('loading').style.display = 'none';
                 }
+            }
+
+            getStaticProducts() {
+                return [
+                    // Vitamins
+                    {
+                        _id: 'vitamin-d3',
+                        name: "Vitamin D3 2000 IU",
+                        category: "vitamins",
+                        subcategory: "fat-soluble",
+                        description: "High-potency Vitamin D3 to support bone health, immune function, and overall wellness.",
+                        benefits: ["Supports bone and teeth health", "Boosts immune system function", "Helps regulate mood and energy levels"],
+                        pricing: { basePrice: 24.99, salePrice: 19.99 },
+                        ratings: { average: 4.8, count: 234 },
+                        tags: ["vitamin-d", "bone-health", "immune-support"],
+                        inventory: { stock: 150, status: "in-stock" }
+                    },
+                    {
+                        _id: 'vitamin-c',
+                        name: "Vitamin C 1000mg with Rose Hips",
+                        category: "vitamins",
+                        subcategory: "water-soluble",
+                        description: "High-potency vitamin C with natural rose hips for enhanced absorption and antioxidant protection.",
+                        benefits: ["Powerful antioxidant protection", "Supports immune system", "Promotes collagen synthesis"],
+                        pricing: { basePrice: 19.99, salePrice: 16.99 },
+                        ratings: { average: 4.5, count: 456 },
+                        tags: ["vitamin-c", "immune-support", "antioxidant"],
+                        inventory: { stock: 289, status: "in-stock" }
+                    },
+                    // Minerals
+                    {
+                        _id: 'zinc-picolinate',
+                        name: "Zinc Picolinate 50mg",
+                        category: "minerals",
+                        subcategory: "essential-minerals",
+                        description: "High-absorption zinc picolinate to support immune function, wound healing, and protein synthesis.",
+                        benefits: ["Supports immune system function", "Promotes wound healing", "Essential for protein synthesis"],
+                        pricing: { basePrice: 18.99, salePrice: 15.99 },
+                        ratings: { average: 4.7, count: 389 },
+                        tags: ["zinc", "immune-support", "healing"],
+                        inventory: { stock: 245, status: "in-stock" }
+                    },
+                    {
+                        _id: 'calcium-magnesium',
+                        name: "Calcium Magnesium Complex",
+                        category: "minerals",
+                        subcategory: "bone-health",
+                        description: "Balanced calcium and magnesium formula for optimal bone health and muscle function support.",
+                        benefits: ["Supports strong bones and teeth", "Promotes muscle function", "Supports cardiovascular health"],
+                        pricing: { basePrice: 22.99 },
+                        ratings: { average: 4.5, count: 267 },
+                        tags: ["calcium", "magnesium", "bone-health"],
+                        inventory: { stock: 178, status: "in-stock" }
+                    },
+                    // Supplements
+                    {
+                        _id: 'turmeric-curcumin',
+                        name: "Turmeric Curcumin with BioPerine",
+                        category: "supplements",
+                        subcategory: "herbal",
+                        description: "Potent turmeric curcumin extract with BioPerine for enhanced absorption and anti-inflammatory support.",
+                        benefits: ["Powerful anti-inflammatory effects", "Supports joint health", "Antioxidant protection"],
+                        pricing: { basePrice: 29.99, salePrice: 24.99 },
+                        ratings: { average: 4.5, count: 389 },
+                        tags: ["turmeric", "anti-inflammatory", "joint-health"],
+                        inventory: { stock: 167, status: "in-stock" }
+                    },
+                    {
+                        _id: 'ashwagandha',
+                        name: "Ashwagandha KSM-66 600mg",
+                        category: "supplements",
+                        subcategory: "adaptogenic",
+                        description: "Premium KSM-66 ashwagandha root extract for stress management and energy enhancement.",
+                        benefits: ["Reduces stress and cortisol", "Improves energy and vitality", "Supports cognitive function"],
+                        pricing: { basePrice: 34.99 },
+                        ratings: { average: 4.6, count: 278 },
+                        tags: ["ashwagandha", "stress-relief", "adaptogen"],
+                        inventory: { stock: 134, status: "in-stock" }
+                    },
+                    // Multivitamins
+                    {
+                        _id: 'mens-multi',
+                        name: "Men's Daily Multivitamin Formula",
+                        category: "multivitamins",
+                        subcategory: "men",
+                        description: "Comprehensive daily multivitamin specifically formulated for men's nutritional needs and energy support.",
+                        benefits: ["Complete daily nutritional support", "Supports energy and vitality", "Promotes heart health"],
+                        pricing: { basePrice: 32.99, salePrice: 27.99 },
+                        ratings: { average: 4.5, count: 423 },
+                        tags: ["multivitamin", "men", "energy"],
+                        inventory: { stock: 189, status: "in-stock" }
+                    },
+                    {
+                        _id: 'womens-multi',
+                        name: "Women's Daily Multivitamin Plus",
+                        category: "multivitamins",
+                        subcategory: "women",
+                        description: "Complete multivitamin with iron, folate, and biotin specifically designed for women's health needs.",
+                        benefits: ["Supports women's nutritional needs", "Contains iron for energy support", "Includes folate for reproductive health"],
+                        pricing: { basePrice: 34.99 },
+                        ratings: { average: 4.6, count: 512 },
+                        tags: ["multivitamin", "women", "iron"],
+                        inventory: { stock: 198, status: "in-stock" }
+                    },
+                    // Probiotics
+                    {
+                        _id: 'ultimate-probiotic',
+                        name: "Ultimate Probiotic 100 Billion CFU",
+                        category: "probiotics",
+                        subcategory: "high-potency",
+                        description: "Ultra-high potency probiotic with 15 strains and 100 billion CFU for comprehensive digestive support.",
+                        benefits: ["Maximum digestive support", "Supports immune function", "Promotes healthy gut bacteria"],
+                        pricing: { basePrice: 54.99, salePrice: 47.99 },
+                        ratings: { average: 4.6, count: 267 },
+                        tags: ["probiotics", "high-potency", "digestive-health"],
+                        inventory: { stock: 89, status: "in-stock" }
+                    },
+                    {
+                        _id: 'womens-probiotic',
+                        name: "Women's Probiotic Balance Formula",
+                        category: "probiotics",
+                        subcategory: "women",
+                        description: "Specialized probiotic formula for women's digestive and vaginal health with targeted strains.",
+                        benefits: ["Supports vaginal health", "Promotes digestive balance", "Supports urinary tract health"],
+                        pricing: { basePrice: 39.99 },
+                        ratings: { average: 4.5, count: 334 },
+                        tags: ["probiotics", "women", "vaginal-health"],
+                        inventory: { stock: 156, status: "in-stock" }
+                    },
+                    // Prebiotics
+                    {
+                        _id: 'prebiotic-fiber',
+                        name: "Prebiotic Fiber Complex",
+                        category: "prebiotics",
+                        subcategory: "fiber-blend",
+                        description: "Comprehensive prebiotic fiber blend with inulin, FOS, and resistant starch to nourish beneficial gut bacteria.",
+                        benefits: ["Feeds beneficial gut bacteria", "Supports digestive health", "Promotes regularity"],
+                        pricing: { basePrice: 27.99 },
+                        ratings: { average: 4.4, count: 234 },
+                        tags: ["prebiotics", "fiber", "gut-health"],
+                        inventory: { stock: 134, status: "in-stock" }
+                    },
+                    {
+                        _id: 'prebiotic-gummies',
+                        name: "Prebiotic Gummies Berry Blend",
+                        category: "prebiotics",
+                        subcategory: "gummies",
+                        description: "Delicious berry-flavored prebiotic gummies with natural fruit fibers and plant-based pectin.",
+                        benefits: ["Delicious way to get prebiotics", "Supports gut health", "Natural fruit flavors"],
+                        pricing: { basePrice: 26.99 },
+                        ratings: { average: 4.6, count: 278 },
+                        tags: ["prebiotics", "gummies", "berry-flavor"],
+                        inventory: { stock: 167, status: "in-stock" }
+                    },
+                    // Toddler Gummies
+                    {
+                        _id: 'toddler-multi',
+                        name: "Toddler Multivitamin Gummies",
+                        category: "multivitamins",
+                        subcategory: "toddler-gummies",
+                        description: "Complete multivitamin gummies specially formulated for toddlers ages 2-4 with essential nutrients.",
+                        benefits: ["Supports healthy growth", "Boosts immune system", "Promotes brain development"],
+                        pricing: { basePrice: 19.99 },
+                        ratings: { average: 4.8, count: 456 },
+                        tags: ["toddler", "gummies", "multivitamin"],
+                        inventory: { stock: 234, status: "in-stock" }
+                    },
+                    {
+                        _id: 'toddler-vitamin-c',
+                        name: "Toddler Vitamin C Gummies",
+                        category: "vitamins",
+                        subcategory: "toddler-gummies",
+                        description: "Gentle vitamin C gummies for toddlers to support immune system and overall health.",
+                        benefits: ["Supports immune system", "Gentle on little stomachs", "Natural orange flavor"],
+                        pricing: { basePrice: 16.99 },
+                        ratings: { average: 4.7, count: 298 },
+                        tags: ["toddler", "gummies", "vitamin-c"],
+                        inventory: { stock: 189, status: "in-stock" }
+                    }
+                ];
             }
 
             setupEventListeners() {
